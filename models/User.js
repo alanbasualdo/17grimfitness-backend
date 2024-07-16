@@ -10,13 +10,15 @@ const User = Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     dni: {
       type: Number,
-      required: true,
     },
     cel: {
       type: Number,
-      required: true,
     },
     password: {
       type: String,
