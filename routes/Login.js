@@ -1,11 +1,11 @@
-const { Router } = require('express')
-const { login, token } = require('../controllers/Login')
-const { validateJWT } = require('../middlewares/jwt')
+const { Router } = require("express");
+const { login, token } = require("../controllers/Login");
+const { validateJWT } = require("../middlewares/jwt");
 
-const router = Router()
+const router = Router();
 
-router.post('/', login)
+router.post("/auth", login);
 
-router.get('/renew', validateJWT, token)
+router.get("/renew", validateJWT, token);
 
-module.exports = router
+module.exports = router;

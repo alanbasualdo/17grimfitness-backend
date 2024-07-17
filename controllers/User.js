@@ -82,38 +82,51 @@ const userPost = async (req, res) => {
 };
 
 const userPut = async (req, res) => {
-  const { _id } = req.user;
-  const { name, email, password, city, address, cel } = req.body;
-  const updatedUser = {};
-  if (password) {
-    const salt = bcryptjs.genSaltSync();
-    updatedUser.password = bcryptjs.hashSync(password, salt);
-  }
-  if (name) {
-    updatedUser.name = name;
-  }
-  if (email) {
-    updatedUser.email = email;
-  }
-  if (city) {
-    updatedUser.city = city;
-  }
-  if (address) {
-    updatedUser.address = address;
-  }
-  if (cel) {
-    updatedUser.cel = cel;
-  }
   try {
-    const user = await User.findByIdAndUpdate(_id, updatedUser, { new: true });
-    res.json({
-      msg: "Usuario actualizado correctamente.",
-      user,
+    const userId = req.user._id;
+    const { name, email, password, cel, dni } = req.body;
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+    }
+    if (email && email !== existingUser.email) {
+      const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: "El email ya está en uso por otro usuario",
+        });
+      }
+    }
+    if (name) {
+      existingUser.name = name;
+    }
+    if (dni) {
+      existingUser.dni = dni;
+    }
+    if (email) {
+      existingUser.email = email;
+    }
+    if (password) {
+      const salt = bcryptjs.genSaltSync();
+      existingUser.password = bcryptjs.hashSync(password, salt);
+    }
+    if (cel) {
+      existingUser.cel = cel;
+    }
+    await existingUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Datos actualizados correctamente.",
+      user: existingUser,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error actualizando usuario:", error.message);
     res.status(500).json({
-      msg: "Ha ocurrido un error en el servidor",
+      success: false,
+      message: "Hubo un error al actualizar el usuario",
     });
   }
 };

@@ -3,9 +3,9 @@ const bcryptjs = require("bcryptjs");
 const { generateJWT } = require("../helpers/JWTgenerator");
 
 const login = async (req, res) => {
-  const { dni, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ dni });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         success: false,

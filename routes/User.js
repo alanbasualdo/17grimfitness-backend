@@ -16,11 +16,7 @@ router.get("/", [validateJWT, adminRol], userGet);
 
 router.post("/new", userPost);
 
-router.put(
-  "/:id",
-  [validateJWT, check("id", "No es un ID válido").isMongoId(), validateFields],
-  userPut
-);
+router.put("/edit", validateJWT, userPut);
 
 router.delete(
   "/:id",
