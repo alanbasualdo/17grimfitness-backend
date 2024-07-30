@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const Class = Schema(
+const ClassSchema = new Schema(
   {
     day: {
       type: String,
@@ -24,4 +24,4 @@ const Class = Schema(
   }
 );
 
-module.exports = model("Class", Class);
+module.exports = model("Class", ClassSchema);
