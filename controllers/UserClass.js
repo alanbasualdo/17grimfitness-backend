@@ -5,12 +5,10 @@ const UserClass = require("../models/UserClass");
 const getAllClasses = async (req, res) => {
   try {
     const allClasses = await Classes.find();
-    res.status(200).json({ success: true, allClasses });
+    res.json({ success: true, allClasses });
   } catch (error) {
     console.error("Error al obtener las clases:", error);
-    res
-      .status(500)
-      .json({ success: false, error: "Hubo un error al obtener las clases." });
+    res.json({ success: false, error: "Hubo un error al obtener las clases." });
   }
 };
 
@@ -22,10 +20,10 @@ const getInscribedUsersByClass = async (req, res) => {
       "user"
     );
 
-    res.status(200).json({ success: true, inscribedUsers });
+    res.json({ success: true, inscribedUsers });
   } catch (error) {
     console.error("Error al obtener los usuarios inscritos:", error);
-    res.status(500).json({
+    res.json({
       success: false,
       error: "Hubo un error al obtener los usuarios inscritos.",
     });
@@ -40,10 +38,10 @@ const getAllClassesByUser = async (req, res) => {
       "class"
     );
 
-    res.status(200).json({ success: true, userClasses });
+    res.json({ success: true, userClasses });
   } catch (error) {
     console.error("Error al obtener las clases del usuario:", error);
-    res.status(500).json({
+    res.json({
       success: false,
       error: "Hubo un error al obtener las clases del usuario.",
     });
@@ -62,9 +60,9 @@ const subscribeUserToClass = async (req, res) => {
       class: classId,
     });
     if (existingSubscription) {
-      return res.status(400).json({
+      return res.json({
         success: false,
-        message: "El usuario ya está inscrito en esta clase.",
+        message: "Usted ya está en esta clase.",
       });
     }
 
@@ -72,12 +70,47 @@ const subscribeUserToClass = async (req, res) => {
     const newSubscription = new UserClass({ user: userId, class: classId });
     await newSubscription.save();
 
-    res.status(201).json({ success: true, message: "Inscripción exitosa." });
+    res.json({ success: true, message: "Inscripción exitosa." });
   } catch (error) {
     console.error("Error al inscribir al usuario en la clase:", error);
-    res.status(500).json({
+    res.json({
       success: false,
       error: "Hubo un error al inscribir al usuario en la clase.",
+    });
+  }
+};
+
+// Eliminar a un usuario de una clase
+const unsubscribeUserFromClass = async (req, res) => {
+  try {
+    const userId = req.user._id; // Obtener el ID del usuario autenticado desde req.user (JWT)
+    const { classId } = req.params; // Obtener el ID de la clase desde los parámetros de la URL
+
+    // Verificar si el usuario está inscrito en la clase
+    const subscription = await UserClass.findOne({
+      user: userId,
+      class: classId,
+    });
+    console.log(subscription);
+    if (!subscription) {
+      return res.json({
+        success: false,
+        message: "No está inscrito en esta clase.",
+      });
+    }
+
+    // Eliminar la inscripción del usuario a la clase
+    await UserClass.deleteOne({ user: userId, class: classId });
+
+    res.json({
+      success: true,
+      message: "Se ha eliminado de la clase exitosamente.",
+    });
+  } catch (error) {
+    console.error("Error al eliminar la inscripción del usuario:", error);
+    res.json({
+      success: false,
+      message: "Hubo un error al eliminar la inscripción de la clase.",
     });
   }
 };
@@ -87,4 +120,5 @@ module.exports = {
   getInscribedUsersByClass,
   getAllClassesByUser,
   subscribeUserToClass,
+  unsubscribeUserFromClass,
 };
