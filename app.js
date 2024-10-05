@@ -17,6 +17,7 @@ app.use("/login", require("./routes/Login"));
 app.use("/user", require("./routes/User"));
 app.use("/class", require("./routes/Classes"));
 app.use("/userClass", require("./routes/UserClass"));
+app.use("/users", require("./routes/Users"));
 
 app.get("*", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");

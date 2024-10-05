@@ -80,18 +80,16 @@ const subscribeUserToClass = async (req, res) => {
   }
 };
 
-// Eliminar a un usuario de una clase
 const unsubscribeUserFromClass = async (req, res) => {
   try {
-    const userId = req.user._id; // Obtener el ID del usuario autenticado desde req.user (JWT)
-    const { classId } = req.params; // Obtener el ID de la clase desde los parámetros de la URL
+    const { classId } = req.params;
+    const userId = req.user._id;
 
-    // Verificar si el usuario está inscrito en la clase
     const subscription = await UserClass.findOne({
+      _id: classId,
       user: userId,
-      class: classId,
     });
-    console.log(subscription);
+
     if (!subscription) {
       return res.json({
         success: false,
@@ -99,8 +97,7 @@ const unsubscribeUserFromClass = async (req, res) => {
       });
     }
 
-    // Eliminar la inscripción del usuario a la clase
-    await UserClass.deleteOne({ user: userId, class: classId });
+    await UserClass.deleteOne({ _id: classId, user: userId });
 
     res.json({
       success: true,

@@ -11,22 +11,10 @@ const PaymentSchema = new Schema(
       type: Number,
       required: true,
     },
-    date: {
-      type: Date,
-      default: Date.now,
-    },
-    month: {
-      type: String,
-      required: true,
-    },
-    year: {
-      type: Number,
-      required: true,
-    },
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
+      enum: ["Pendiente", "Pagado", "Error"],
+      default: "Pendiente",
     },
   },
   {
